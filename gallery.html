@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Galeri - RT 14 Perum Korpri Sambiroto</title>
+
+    <!-- Load Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <link rel="icon" type="image/x-icon" href="/path/to/favicon.ico" />
+
+    <!-- Load Alpine.js -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.3/cdn.min.js"
+      defer
+    ></script>
+    <!-- Load Font Awesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --primary-color: #2c5f2d;
+        --primary-light: #4a7c59;
+        --primary-dark: #1e3f20;
+        --secondary-color: #97bc62;
+        --accent-color: #f39c12;
+        --background-color: #f8f9fa;
+        --card-bg: #ffffff;
+        --text-color: #2c3e50;
+        --border-color: #e9ecef;
+        --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.1);
+        --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+
+      /* Header Styles */
+      header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--primary-light)
+        );
+        color: white;
+        padding: 1rem 0;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        box-shadow: var(--shadow-medium);
+      }
+
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .nav-links {
+        display: flex;
+        list-style: none;
+        gap: 2rem;
+      }
+
+      .nav-links a {
+        color: white;
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: var(--secondary-color);
+      }
+
+      .hamburger {
+        display: none;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+      }
+
+      .admin-btn {
+        background: var(--accent-color);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .admin-btn:hover {
+        background: #e67e22;
+        transform: translateY(-2px);
+      }
+
+      /* Main Content */
+      main {
+        padding: 2rem 0;
+        min-height: calc(100vh - 80px);
+      }
+
+      .section-title {
+        color: var(--primary-color);
+        text-align: center;
+        margin-bottom: 1rem;
+        font-size: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      /* Alert Styles */
+      .alert {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        animation: slideDown 0.3s ease;
+      }
+
+      .alert-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .alert-error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      .alert-warning {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+      }
+
+      /* Gallery Styles */
+      .gallery-section {
+        margin: 2rem 0;
+      }
+
+      .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      .gallery-item {
+        background: var(--card-bg);
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-light);
+        position: relative;
+      }
+
+      .gallery-item:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-medium);
+      }
+
+      .gallery-item img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        cursor: pointer;
+      }
+
+      .gallery-item-content {
+        padding: 1.5rem;
+      }
+
+      .gallery-item h3 {
+        color: var(--primary-color);
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .gallery-item p {
+        color: var(--text-color);
+        font-size: 0.9rem;
+        line-height: 1.5;
+        opacity: 0.8;
+        margin-bottom: 0.5rem;
+      }
+
+      .delete-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #ff4757;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        cursor: pointer;
+        font-size: 1rem;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .delete-btn:hover {
+        background: #ff3742;
+        transform: scale(1.1);
+      }
+
+      .admin-mode .delete-btn {
+        display: flex;
+      }
+
+      /* Upload Section */
+      .upload-section {
+        background: var(--card-bg);
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-light);
+      }
+
+      .upload-form {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-group label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--primary-color);
+      }
+
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        padding: 0.75rem;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+      }
+
+      /* Button Styles */
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        background: var(--border-color);
+        color: var(--text-color);
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-light);
+      }
+
+      .btn-primary {
+        background: var(--primary-color);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: var(--primary-dark);
+      }
+
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
+      }
+
+      .btn-danger {
+        background: #dc3545;
+        color: white;
+      }
+
+      /* Modal Styles */
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1500;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: var(--card-bg);
+        padding: 2rem;
+        border-radius: 15px;
+        max-width: 400px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+
+      /* Image Modal */
+      .image-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+      }
+
+      .image-modal.active {
+        display: flex;
+      }
+
+      .image-modal img {
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+      }
+
+      .image-modal-close {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: none;
+        font-size: 2rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Loading */
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      /* Floating Action Button */
+      .fab {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+        cursor: pointer;
+        box-shadow: var(--shadow-medium);
+        transition: all 0.3s ease;
+        z-index: 1000;
+      }
+
+      .fab:hover {
+        background: var(--primary-dark);
+        transform: translateY(-3px);
+      }
+
+      /* File Input */
+      .file-input-wrapper {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+        width: 100%;
+      }
+
+      .file-input-wrapper input[type="file"] {
+        position: absolute;
+        left: -9999px;
+      }
+
+      .file-input-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        justify-content: center;
+      }
+
+      .file-input-label:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+      }
+
+      /* Empty State */
+      .empty-gallery {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-color);
+        opacity: 0.7;
+      }
+
+      .empty-gallery i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+
+      /* Status indicator */
+      .status-indicator {
+        position: fixed;
+        top: 80px;
+        right: 1rem;
+        background: var(--card-bg);
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        font-size: 0.8rem;
+        box-shadow: var(--shadow-light);
+        z-index: 999;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .status-online {
+        color: #28a745;
+      }
+
+      .status-offline {
+        color: #dc3545;
+      }
+
+      /* Animations */
+      @keyframes slideDown {
+        from {
+          transform: translateY(-100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .pulse {
+        animation: pulse 2s infinite;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .hamburger {
+          display: block;
+        }
+
+        .nav-links {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          width: 100%;
+          background: var(--primary-color);
+          flex-direction: column;
+          padding: 1rem;
+          box-shadow: var(--shadow-medium);
+          display: none;
+        }
+
+        .nav-links.show {
+          display: flex;
+        }
+
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+
+        .gallery-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .section-title {
+          font-size: 1.5rem;
+        }
+
+        .status-indicator {
+          position: static;
+          margin: 1rem auto;
+          width: fit-content;
+        }
+      }
+    </style>
+  </head>
+  <body x-data="galleryApp()">
+    <!-- Status Indicator -->
+    <div class="status-indicator" x-show="showStatus">
+      <div class="pulse" x-show="!supabaseConnected">
+        <i class="fas fa-circle status-offline"></i>
+      </div>
+      <div x-show="supabaseConnected">
+        <i class="fas fa-circle status-online"></i>
+      </div>
+      <span x-text="statusText"></span>
+    </div>
+
+    <header>
+      <nav class="container">
+        <div class="logo">
+          <i class="fa-solid fa-house-flag"></i>
+          RT 14 Perum Korpri Sambiroto
+        </div>
+        <button class="hamburger" @click="menuOpen = !menuOpen">
+          <i class="fas fa-bars"></i>
+        </button>
+        <ul class="nav-links" :class="{ 'show': menuOpen }">
+          <li><a href="home.html">Beranda</a></li>
+          <li><a href="gallery.html" class="active">Galeri</a></li>
+          <li><a href="home.html#jadwal">Pengumuman</a></li>
+          <li><a href="home.html#tentang">Tentang</a></li>
+          <li><a href="home.html#kontak">Kontak</a></li>
+        </ul>
+        <button class="admin-btn" @click="showAdminLogin = true">
+          <i class="fas fa-user-shield"></i>
+          <span x-text="isAdmin ? 'Logout' : 'Admin'"></span>
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <div class="container">
+        <!-- Alert Messages -->
+        <div
+          x-show="alert.show"
+          x-transition
+          class="alert"
+          :class="'alert-' + alert.type"
+        >
+          <span x-text="alert.message"></span>
+        </div>
+
+        <!-- Page Header -->
+        <section class="content-section">
+          <h1 class="section-title">
+            <i class="fas fa-images"></i> Galeri Kegiatan RT 14
+          </h1>
+          <p style="text-align: center; margin-bottom: 2rem; opacity: 0.8">
+            Dokumentasi kegiatan dan momen berharga warga RT 14 Perum Korpri
+            Sambiroto
+          </p>
+        </section>
+
+        <!-- Admin Upload Section -->
+        <section x-show="isAdmin" class="upload-section" x-transition>
+          <h2 class="section-title">
+            <i class="fas fa-upload"></i> Upload Foto Baru
+          </h2>
+          <form @submit.prevent="uploadImage" class="upload-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="imageTitle">Judul Foto:</label>
+                <input
+                  type="text"
+                  id="imageTitle"
+                  x-model="uploadForm.title"
+                  required
+                  placeholder="Contoh: Arisan RT Bulan Januari"
+                />
+              </div>
+              <div class="form-group">
+                <label for="imageCategory">Kategori:</label>
+                <select
+                  id="imageCategory"
+                  x-model="uploadForm.category"
+                  required
+                >
+                  <option value="">Pilih Kategori</option>
+                  <option value="arisan">Arisan</option>
+                  <option value="gotong-royong">Gotong Royong</option>
+                  <option value="bank-sampah">Bank Sampah</option>
+                  <option value="sosial">Kegiatan Sosial</option>
+                  <option value="perayaan">Perayaan</option>
+                  <option value="lainnya">Lainnya</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="imageDesc">Deskripsi:</label>
+              <textarea
+                id="imageDesc"
+                x-model="uploadForm.description"
+                rows="3"
+                placeholder="Ceritakan tentang foto ini..."
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <div class="file-input-wrapper">
+                <input
+                  type="file"
+                  id="imageFile"
+                  @change="handleFileSelect"
+                  accept="image/*"
+                  required
+                />
+                <label for="imageFile" class="file-input-label">
+                  <i class="fas fa-camera"></i>
+                  <span x-text="selectedFileName || 'Pilih Foto'"></span>
+                </label>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary" :disabled="uploading">
+              <span x-show="uploading" class="loading"></span>
+              <i x-show="!uploading" class="fas fa-upload"></i>
+              <span x-text="uploading ? 'Mengupload...' : 'Upload Foto'"></span>
+            </button>
+          </form>
+        </section>
+
+        <!-- Gallery Section -->
+        <section class="gallery-section">
+          <!-- Filter Buttons -->
+          <div style="text-align: center; margin-bottom: 2rem">
+            <button
+              @click="currentFilter = 'all'"
+              class="btn"
+              :class="{ 'btn-primary': currentFilter === 'all' }"
+              style="margin: 0.25rem"
+            >
+              Semua
+            </button>
+            <template x-for="category in categories" :key="category.value">
+              <button
+                @click="currentFilter = category.value"
+                class="btn"
+                :class="{ 'btn-primary': currentFilter === category.value }"
+                style="margin: 0.25rem"
+                x-text="category.label"
+              ></button>
+            </template>
+          </div>
+
+          <!-- Loading State -->
+          <div x-show="loading" class="text-center">
+            <div class="loading"></div>
+            <p>Memuat galeri...</p>
+          </div>
+
+          <!-- Empty State -->
+          <div
+            x-show="!loading && filteredGallery.length === 0"
+            class="empty-gallery"
+          >
+            <i class="fas fa-images"></i>
+            <h3>Belum Ada Foto</h3>
+            <p x-show="!isAdmin">
+              Galeri masih kosong. Admin sedang mempersiapkan foto-foto
+              kegiatan.
+            </p>
+            <p x-show="isAdmin">
+              Mulai tambahkan foto kegiatan RT 14 dengan menggunakan form upload
+              di atas.
+            </p>
+          </div>
+
+          <!-- Gallery Grid -->
+          <div
+            x-show="!loading && filteredGallery.length > 0"
+            class="gallery-grid"
+          >
+            <template x-for="item in filteredGallery" :key="item.id">
+              <div class="gallery-item" :class="{ 'admin-mode': isAdmin }">
+                <img
+                  :src="item.image_url"
+                  :alt="item.title"
+                  @click="openImageModal(item.image_url, item.title)"
+                  style="cursor: pointer"
+                  @error="handleImageError($event, item)"
+                  @load="item.imageLoaded = true"
+                />
+                <div class="gallery-item-content">
+                  <h3 x-text="item.title"></h3>
+                  <p x-text="item.description"></p>
+                  <small style="opacity: 0.6">
+                    <i class="fas fa-tag"></i>
+                    <span x-text="getCategoryLabel(item.category)"></span>
+                    •
+                    <i class="fas fa-calendar"></i>
+                    <span x-text="formatDate(item.created_at)"></span>
+                  </small>
+                </div>
+                <button
+                  x-show="isAdmin"
+                  class="delete-btn"
+                  @click="deleteImage(item.id)"
+                  title="Hapus foto"
+                >
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </template>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Floating Action Button -->
+    <button
+      class="fab"
+      @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
+      title="Kembali ke atas"
+    >
+      <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Admin Login Modal -->
+    <div class="modal" :class="{ active: showAdminLogin }">
+      <div class="modal-content">
+        <h3 style="margin-bottom: 1.5rem; text-align: center">
+          <span x-show="!isAdmin">Login Admin</span>
+          <span x-show="isAdmin">Konfirmasi Logout</span>
+        </h3>
+        <form x-show="!isAdmin" @submit.prevent="adminLogin">
+          <div class="form-group">
+            <label for="adminPassword">Password Admin:</label>
+            <input
+              type="password"
+              id="adminPassword"
+              x-model="adminPassword"
+              required
+            />
+          </div>
+          <div
+            style="
+              text-align: center;
+              gap: 1rem;
+              display: flex;
+              justify-content: center;
+            "
+          >
+            <button type="submit" class="btn btn-primary" :disabled="loggingIn">
+              <span x-show="loggingIn" class="loading"></span>
+              <span x-show="!loggingIn">Login</span>
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              @click="showAdminLogin = false"
+            >
+              Batal
+            </button>
+          </div>
+        </form>
+        <div x-show="isAdmin" style="text-align: center">
+          <p style="margin-bottom: 1.5rem">
+            Apakah Anda yakin ingin logout dari mode admin?
+          </p>
+          <div style="gap: 1rem; display: flex; justify-content: center">
+            <button class="btn btn-danger" @click="logout">
+              <i class="fas fa-sign-out-alt"></i> Ya, Logout
+            </button>
+            <button class="btn btn-secondary" @click="showAdminLogin = false">
+              Batal
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div
+      class="image-modal"
+      :class="{ active: showImageModal }"
+      @click="closeImageModal"
+    >
+      <button class="image-modal-close" @click="closeImageModal">
+        <i class="fas fa-times"></i>
+      </button>
+      <img :src="modalImage" :alt="modalTitle" @click.stop />
+    </div>
+
+    <script>
+      // Supabase Configuration
+      const SUPABASE_URL = "https://znnosepdoehimgaaalzn.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpubm9zZXBkb2VoaW1nYWFhbHpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwODEyMjYsImV4cCI6MjA2NTY1NzIyNn0.F8wc0J2OmTTLpHeSMF9Kwqx_8xVBKj0o6mIXGpQCXLs";
+
+      let supabase = null;
+
+      // Initialize Supabase with error handling
+      function initSupabase() {
+        try {
+          if (
+            typeof window.supabase !== "undefined" &&
+            window.supabase.createClient
+          ) {
+            supabase = window.supabase.createClient(
+              SUPABASE_URL,
+              SUPABASE_ANON_KEY
+            );
+            console.log("Supabase initialized successfully");
+            return true;
+          } else {
+            console.warn("Supabase library not available");
+            return false;
+          }
+        } catch (error) {
+          console.error("Error initializing Supabase:", error);
+          return false;
+        }
+      }
+
+      function galleryApp() {
+        return {
+          // State
+          menuOpen: false,
+          isAdmin: false,
+          showAdminLogin: false,
+          adminPassword: "",
+          loggingIn: false,
+          loading: false,
+          uploading: false,
+          supabaseConnected: false,
+          showStatus: true,
+
+          // Gallery data
+          gallery: [],
+          currentFilter: "all",
+
+          // Upload form
+          uploadForm: {
+            title: "",
+            description: "",
+            category: "",
+            file: null,
+          },
+          selectedFileName: "",
+
+          // Alert system
+          alert: {
+            show: false,
+            message: "",
+            type: "success",
+          },
+
+          // Image modal
+          showImageModal: false,
+          modalImage: "",
+          modalTitle: "",
+
+          // Categories
+          categories: [
+            { value: "arisan", label: "Arisan" },
+            { value: "gotong-royong", label: "Gotong Royong" },
+            { value: "bank-sampah", label: "Bank Sampah" },
+            { value: "sosial", label: "Kegiatan Sosial" },
+            { value: "perayaan", label: "Perayaan" },
+            { value: "lainnya", label: "Lainnya" },
+          ],
+
+          // Computed properties
+          get statusText() {
+            return this.supabaseConnected ? "Online" : "Mode Offline";
+          },
+
+          get filteredGallery() {
+            if (this.currentFilter === "all") {
+              return this.gallery;
+            }
+            return this.gallery.filter(
+              (item) => item.category === this.currentFilter
+            );
+          },
+
+          // Initialize
+          async init() {
+            setTimeout(() => {
+              this.showStatus = false;
+            }, 5000);
+
+            this.checkAdminSession();
+            this.supabaseConnected = initSupabase();
+
+            if (!this.supabaseConnected) {
+              this.showAlert(
+                "Mode offline aktif. Fitur terbatas tersedia.",
+                "warning"
+              );
+              this.gallery = [];
+              this.loading = false;
+              return;
+            }
+
+            await this.loadGallery();
+          },
+
+          // Load gallery from Supabase
+          async loadGallery() {
+            this.loading = true;
+            if (this.supabaseConnected && supabase) {
+              try {
+                const { data, error } = await supabase
+                  .from("gallery")
+                  .select("*")
+                  .order("created_at", { ascending: false });
+
+                if (error) {
+                  throw error;
+                }
+
+                console.log("Raw gallery data from Supabase:", data);
+
+                // Handle different possible ID field names
+                this.gallery = (data || []).map((item) => {
+                  // Try different possible ID field names
+                  const itemId =
+                    item.id || item["id BIGSERIAL"] || item.ID || null;
+
+                  return {
+                    id: itemId,
+                    title: item.title || "",
+                    description: item.description || "",
+                    category: item.category || "lainnya",
+                    image_url: item.image_url || "",
+                    file_path: item.file_path || "",
+                    created_at: item.created_at || new Date().toISOString(),
+                    imageLoaded: false,
+                  };
+                });
+
+                console.log("Processed gallery data:", this.gallery);
+              } catch (error) {
+                console.error("Error loading gallery from Supabase:", error);
+                this.supabaseConnected = false;
+                this.showAlert(
+                  "Gagal memuat dari server. Beralih ke mode offline.",
+                  "warning"
+                );
+                this.gallery = [];
+              } finally {
+                this.loading = false;
+              }
+            } else {
+              this.gallery = [];
+              this.loading = false;
+            }
+          },
+
+          // Alert system
+          showAlert(message, type = "success") {
+            this.alert.show = true;
+            this.alert.message = message;
+            this.alert.type = type;
+            setTimeout(() => {
+              this.alert.show = false;
+            }, 5000);
+          },
+
+          // Admin session check
+          checkAdminSession() {
+            try {
+              this.isAdmin = localStorage.getItem("isAdmin") === "true";
+            } catch (error) {
+              console.warn("localStorage not available:", error);
+              this.isAdmin = false;
+            }
+          },
+
+          // Handle file input change
+          handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+              // Validate file type
+              const allowedTypes = [
+                "image/jpeg",
+                "image/jpg",
+                "image/png",
+                "image/gif",
+                "image/webp",
+              ];
+              if (!allowedTypes.includes(file.type)) {
+                this.showAlert(
+                  "Format file tidak didukung. Gunakan JPG, PNG, GIF, atau WebP.",
+                  "error"
+                );
+                event.target.value = "";
+                return;
+              }
+
+              // Validate file size (max 5MB)
+              const maxSize = 5 * 1024 * 1024; // 5MB
+              if (file.size > maxSize) {
+                this.showAlert(
+                  "Ukuran file terlalu besar. Maksimal 5MB.",
+                  "error"
+                );
+                event.target.value = "";
+                return;
+              }
+
+              this.selectedFileName = file.name;
+              this.uploadForm.file = file;
+            } else {
+              this.selectedFileName = "";
+              this.uploadForm.file = null;
+            }
+          },
+
+          // Upload image
+          async uploadImage() {
+            if (!this.uploadForm.file) {
+              this.showAlert("Pilih file gambar terlebih dahulu.", "error");
+              return;
+            }
+
+            if (!this.uploadForm.title.trim()) {
+              this.showAlert("Judul foto harus diisi.", "error");
+              return;
+            }
+
+            if (!this.uploadForm.category) {
+              this.showAlert("Kategori harus dipilih.", "error");
+              return;
+            }
+
+            this.uploading = true;
+
+            if (!this.supabaseConnected || !supabase) {
+              this.showAlert(
+                "Tidak dapat mengupload dalam mode offline.",
+                "error"
+              );
+              this.uploading = false;
+              return;
+            }
+
+            try {
+              const file = this.uploadForm.file;
+              const fileExt = file.name.split(".").pop();
+              const fileName = `${Date.now()}-${Math.random()
+                .toString(36)
+                .substring(7)}.${fileExt}`;
+              const filePath = `gallery/${fileName}`;
+
+              // Upload file to storage
+              const { data: uploadData, error: uploadError } =
+                await supabase.storage.from("images").upload(filePath, file, {
+                  cacheControl: "3600",
+                  upsert: false,
+                });
+
+              if (uploadError) {
+                throw uploadError;
+              }
+
+              // Get public URL
+              const { data: publicUrlData } = supabase.storage
+                .from("images")
+                .getPublicUrl(filePath);
+
+              if (!publicUrlData || !publicUrlData.publicUrl) {
+                throw new Error("Failed to retrieve public URL");
+              }
+
+              const imageUrl = publicUrlData.publicUrl;
+
+              // Insert record to database
+              const { data, error: insertError } = await supabase
+                .from("gallery")
+                .insert([
+                  {
+                    title: this.uploadForm.title.trim(),
+                    description: this.uploadForm.description.trim(),
+                    category: this.uploadForm.category,
+                    image_url: imageUrl,
+                    file_path: filePath,
+                  },
+                ])
+                .select();
+
+              if (insertError) {
+                // If database insert fails, clean up uploaded file
+                await supabase.storage.from("images").remove([filePath]);
+                throw insertError;
+              }
+
+              this.showAlert("Foto berhasil diupload!", "success");
+
+              // Reset form
+              this.uploadForm.title = "";
+              this.uploadForm.description = "";
+              this.uploadForm.category = "";
+              this.uploadForm.file = null;
+              this.selectedFileName = "";
+
+              // Reset file input
+              const fileInput = document.getElementById("imageFile");
+              if (fileInput) {
+                fileInput.value = "";
+              }
+
+              // Reload gallery
+              await this.loadGallery();
+            } catch (error) {
+              console.error("Error uploading image:", error);
+              this.showAlert(
+                `Gagal mengupload foto: ${error.message}`,
+                "error"
+              );
+            } finally {
+              this.uploading = false;
+            }
+          },
+
+          // Delete image
+          async deleteImage(id) {
+            if (!id) {
+              console.error("Error: ID is undefined or null");
+              this.showAlert("ID foto tidak valid.", "error");
+              return;
+            }
+
+            if (!confirm("Apakah Anda yakin ingin menghapus foto ini?")) {
+              return;
+            }
+
+            if (!this.supabaseConnected || !supabase) {
+              this.showAlert(
+                "Tidak dapat menghapus dalam mode offline.",
+                "error"
+              );
+              return;
+            }
+
+            try {
+              // Get image data first
+              const { data: imageData, error: fetchError } = await supabase
+                .from("gallery")
+                .select("*")
+                .eq("id", id)
+                .single();
+
+              if (fetchError) {
+                throw fetchError;
+              }
+
+              if (!imageData) {
+                throw new Error("Data foto tidak ditemukan.");
+              }
+
+              // Delete from database first
+              const { error: dbError } = await supabase
+                .from("gallery")
+                .delete()
+                .eq("id", id);
+
+              if (dbError) {
+                throw dbError;
+              }
+
+              // Delete file from storage if exists
+              if (imageData.file_path) {
+                const { error: storageError } = await supabase.storage
+                  .from("images")
+                  .remove([imageData.file_path]);
+
+                if (storageError) {
+                  console.warn(
+                    "Failed to delete file from storage:",
+                    storageError.message
+                  );
+                  // Don't throw error here as database deletion was successful
+                }
+              }
+
+              this.showAlert("Foto berhasil dihapus!", "success");
+              await this.loadGallery();
+            } catch (error) {
+              console.error("Error deleting image:", error);
+              this.showAlert(`Gagal menghapus foto: ${error.message}`, "error");
+            }
+          },
+
+          // Admin login
+         async adminLogin() {
+      this.loggingIn = true;
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: 'adminrt14@email.com', // 🔒 Sesuaikan dengan akun admin kamu
+        password: this.adminPassword,
+      });
+
+      if (error) {
+        this.showAlert('Login gagal: ' + error.message, 'error');
+      } else {
+        this.isAdmin = true;
+        this.showAdminLogin = false;
+        this.adminPassword = '';
+        this.showAlert('Login berhasil!', 'success');
+      }
+
+      this.loggingIn = false;
+    },
+
+    async logout() {
+      await supabase.auth.signOut();
+      this.isAdmin = false;
+      this.showAlert('Logout berhasil!', 'success');
+    },
+
+          // Image modal functions
+          openImageModal(src, title) {
+            this.modalImage = src;
+            this.modalTitle = title;
+            this.showImageModal = true;
+            document.body.style.overflow = "hidden"; // Prevent scrolling
+          },
+
+          closeImageModal() {
+            this.showImageModal = false;
+            this.modalImage = "";
+            this.modalTitle = "";
+            document.body.style.overflow = "auto"; // Restore scrolling
+          },
+
+          // Helper to get category label
+          getCategoryLabel(value) {
+            const category = this.categories.find((cat) => cat.value === value);
+            return category ? category.label : "Lainnya";
+          },
+
+          // Helper to format date
+          formatDate(dateString) {
+            try {
+              const options = {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                timeZone: "Asia/Jakarta",
+              };
+              return new Date(dateString).toLocaleDateString("id-ID", options);
+            } catch (error) {
+              console.warn("Date formatting error:", error);
+              return "Tanggal tidak valid";
+            }
+          },
+
+          // Handle image loading errors
+          handleImageError(event, item) {
+            console.error("Image failed to load:", item.image_url);
+            event.target.src =
+              "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23f8f9fa'/%3E%3Ctext x='150' y='100' font-family='Arial, sans-serif' font-size='14' fill='%23666' text-anchor='middle'%3EGambar tidak tersedia%3C/text%3E%3C/svg%3E";
+            event.target.alt = "Gambar tidak tersedia";
+            item.imageLoaded = true;
+          },
+
+          // Handle escape key for modals
+          handleKeydown(event) {
+            if (event.key === "Escape") {
+              if (this.showImageModal) {
+                this.closeImageModal();
+              } else if (this.showAdminLogin) {
+                this.showAdminLogin = false;
+              }
+            }
+          },
+        };
+      }
+
+      // Add global event listener for escape key
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          const app = Alpine.$data(document.body.querySelector("[x-data]"));
+          if (app && typeof app.handleKeydown === "function") {
+            app.handleKeydown(event);
+          }
+        }
+      });
+
+      // Handle clicks outside modals
+      document.addEventListener("click", function (event) {
+        const modals = document.querySelectorAll(".modal");
+        modals.forEach((modal) => {
+          if (event.target === modal) {
+            const app = Alpine.$data(document.body.querySelector("[x-data]"));
+            if (app) {
+              app.showAdminLogin = false;
+            }
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
