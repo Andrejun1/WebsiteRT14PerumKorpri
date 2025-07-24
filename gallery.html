@@ -606,11 +606,11 @@
           <i class="fas fa-bars"></i>
         </button>
         <ul class="nav-links" :class="{ 'show': menuOpen }">
-          <li><a href="home.html">Beranda</a></li>
+          <li><a href="index.html">Beranda</a></li>
           <li><a href="gallery.html" class="active">Galeri</a></li>
-          <li><a href="home.html#jadwal">Pengumuman</a></li>
-          <li><a href="home.html#tentang">Tentang</a></li>
-          <li><a href="home.html#kontak">Kontak</a></li>
+          <li><a href="index.html#jadwal">Pengumuman</a></li>
+          <li><a href="index.html#tentang">Tentang</a></li>
+          <li><a href="index.html#kontak">Kontak</a></li>
         </ul>
         <button class="admin-btn" @click="showAdminLogin = true">
           <i class="fas fa-user-shield"></i>
@@ -1273,31 +1273,31 @@
           },
 
           // Admin login
-         async adminLogin() {
-      this.loggingIn = true;
+          async adminLogin() {
+            this.loggingIn = true;
 
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: 'adminrt14@email.com', // 🔒 Sesuaikan dengan akun admin kamu
-        password: this.adminPassword,
-      });
+            const { data, error } = await supabase.auth.signInWithPassword({
+              email: "adminrt14@email.com", // 🔒 Sesuaikan dengan akun admin kamu
+              password: this.adminPassword,
+            });
 
-      if (error) {
-        this.showAlert('Login gagal: ' + error.message, 'error');
-      } else {
-        this.isAdmin = true;
-        this.showAdminLogin = false;
-        this.adminPassword = '';
-        this.showAlert('Login berhasil!', 'success');
-      }
+            if (error) {
+              this.showAlert("Login gagal: " + error.message, "error");
+            } else {
+              this.isAdmin = true;
+              this.showAdminLogin = false;
+              this.adminPassword = "";
+              this.showAlert("Login berhasil!", "success");
+            }
 
-      this.loggingIn = false;
-    },
+            this.loggingIn = false;
+          },
 
-    async logout() {
-      await supabase.auth.signOut();
-      this.isAdmin = false;
-      this.showAlert('Logout berhasil!', 'success');
-    },
+          async logout() {
+            await supabase.auth.signOut();
+            this.isAdmin = false;
+            this.showAlert("Logout berhasil!", "success");
+          },
 
           // Image modal functions
           openImageModal(src, title) {
